@@ -23,46 +23,62 @@ Break enforcer for the [Time Out](https://www.dejal.com/timeout/) app. Helps man
 4. Check **Output scheduler logging**
 5. Check **Only include significant changes**
 
-## Build
+## Installation
+
+### From Releases (Recommended)
+
+Download the latest binary for your architecture from [Releases](https://github.com/redaphid/timeout-defixate/releases):
 
 ```bash
-go build -o timeout-defixate .
+# For Apple Silicon (M1/M2/M3)
+curl -L https://github.com/redaphid/timeout-defixate/releases/latest/download/defixate-darwin-arm64 -o /usr/local/bin/defixate
+chmod +x /usr/local/bin/defixate
+
+# For Intel Macs
+curl -L https://github.com/redaphid/timeout-defixate/releases/latest/download/defixate-darwin-amd64 -o /usr/local/bin/defixate
+chmod +x /usr/local/bin/defixate
+```
+
+### From Source
+
+```bash
+go build -o defixate .
 ```
 
 ## Usage
 
 ```bash
 # Default: 5 skips = lock, 10 = shutdown
-./timeout-defixate
+defixate
 
 # Custom limits
-./timeout-defixate --lock-limit=3 --shutdown-limit=5
+defixate --lock-limit=3 --shutdown-limit=5
 ```
 
 ## Installation as LaunchAgent
 
-Copy this plist to run at login:
+Create the plist to run at login:
 
 ```bash
-cat > ~/Library/LaunchAgents/com.hypnodroid.timeout-defixate.plist << 'EOF'
+cat > ~/Library/LaunchAgents/com.hypnodroid.defixate.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.hypnodroid.timeout-defixate</string>
+    <string>com.hypnodroid.defixate</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/hypnodroid/Projects/timeout-defixate/timeout-defixate</string>
+        <string>/usr/local/bin/defixate</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>/tmp/timeout-defixate.log</string>
+    <string>/tmp/defixate.log</string>
     <key>StandardErrorPath</key>
-    <string>/tmp/timeout-defixate.err</string>
+    <string>/tmp/defixate.err</string>
 </dict>
 </plist>
 EOF
@@ -71,17 +87,24 @@ EOF
 Load the agent:
 
 ```bash
-launchctl load ~/Library/LaunchAgents/com.hypnodroid.timeout-defixate.plist
+launchctl load ~/Library/LaunchAgents/com.hypnodroid.defixate.plist
 ```
 
 ### View logs
 
 ```bash
-tail -f /tmp/timeout-defixate.log
+tail -f /tmp/defixate.log
 ```
 
 ### Stop the service
 
 ```bash
-launchctl unload ~/Library/LaunchAgents/com.hypnodroid.timeout-defixate.plist
+launchctl unload ~/Library/LaunchAgents/com.hypnodroid.defixate.plist
+```
+
+### Restart the service
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.hypnodroid.defixate.plist
+launchctl load ~/Library/LaunchAgents/com.hypnodroid.defixate.plist
 ```
