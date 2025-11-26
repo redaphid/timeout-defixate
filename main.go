@@ -51,19 +51,23 @@ func printBanner(lockLimit, shutdownLimit int) {
 	fmt.Printf("\033[1;36m║  Using Time Out's explicit log messages                   ║\033[0m\n")
 	fmt.Printf("\033[1;36m╚═══════════════════════════════════════════════════════════╝\033[0m\n")
 	fmt.Println()
+	os.Stdout.Sync()
 }
 
 func logMsg(msg string) {
 	timestamp := time.Now().Format("15:04:05")
 	fmt.Printf("\033[33m%s │ %s\033[0m\n", timestamp, msg)
+	os.Stdout.Sync()
 }
 
 func logSuccess(msg string) {
 	timestamp := time.Now().Format("15:04:05")
 	fmt.Printf("\033[32m%s │ %s\033[0m\n", timestamp, msg)
+	os.Stdout.Sync()
 }
 
 func logWarn(msg string) {
 	timestamp := time.Now().Format("15:04:05")
 	fmt.Printf("\033[31m%s │ %s\033[0m\n", timestamp, msg)
+	os.Stdout.Sync()
 }
