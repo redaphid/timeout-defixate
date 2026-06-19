@@ -4,12 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 )
 
 var (
 	lockLimit     = flag.Int("lock-limit", 5, "Lock screen after this many skips/postpones")
 	shutdownLimit = flag.Int("shutdown-limit", 10, "Shutdown after this many skips/postpones")
+	curfewStart   = flag.Int("curfew-start", 22, "Curfew start hour, 24h local time")
+	curfewEnd     = flag.Int("curfew-end", 8, "Curfew end hour, 24h local time")
+	curfewRelock  = flag.Duration("curfew-relock", time.Minute, "Re-lock interval during curfew")
 )
 
 func main() {
@@ -24,6 +28,13 @@ func main() {
 	}
 
 	enforcer := NewEnforcer(*lockLimit, *shutdownLimit)
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to resolve home dir: %v\n", err)
+		os.Exit(1)
+	}
+	go StartCurfew(*curfewStart, *curfewEnd, *curfewRelock, filepath.Join(home, ".defixate-curfew-off"))
 
 	logMsg("Monitoring Time Out logs...")
 	logMsg("Press Ctrl+C to stop")
